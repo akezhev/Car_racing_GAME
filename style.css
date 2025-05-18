@@ -58,6 +58,10 @@ body {
   transition: transform .3s ease;
 }
 
+.game-button .play {
+  display: none;
+}
+
 .game-button:hover {
   transform: scale(1.2);
 }

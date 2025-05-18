@@ -8,34 +8,36 @@
   const trees = document.querySelectorAll('.tree');
 
   const tree1 = trees[0];
+  const coordsTree1 = getCoords(tree1);
 
   animationId = requestAnimationFrame(startGame);
 
-
-// запуск игры
+  // запуск игры
   function startGame() {
     treesAnimation();
 
     animationId = requestAnimationFrame(startGame);
+  };
 
-  }
-
-// анимация дерева
+  //функция панимации деревьев
   function treesAnimation() {
-    const newCoord = getYCoord(tree1) + speed;
-    tree1.style.transform = `translateY(${newCoord}px)`;
+    const newCoordY = coordsTree1.y + speed;
+    coordsTree1.y = newCoordY;
+    tree1.style.transform = `translate(${coordsTree1.x}px, ${newCoordY}px)`;
 
-  }
+  };
 
-
-// функция расчета координат дерева
-  function getYCoord(element) {
-    const matrix = window.getComputedStyle(tree1).transform;
+  // функция получения координат деревьев
+  function getCoords(element) {
+    const matrix = window.getComputedStyle(element).transform;
     const array = matrix.split(',');
-    const lastElement = array[array.length - 1];
-    const coordY = parseFloat(lastElement);
+    const y = array[array.length - 1];
+    const x = array[array.length - 2];
 
-    return coordY;
+    const numericY = parseFloat(y);
+    const numericX = parseFloat(x);
+
+    return { x: numericX, y: numericY };
   }
 
 
@@ -44,11 +46,12 @@
   gameButton.addEventListener('click', () => {
     isPause = !isPause;
     if (isPause) {
-      canselAnimationFrame(animationId);
+      cancelAnimationFrame(animationId);
       gameButton.children[0].style.display = 'none';
       gameButton.children[1].style.display = 'initial';
     } 
     else {
+      animationId = requestAnimationFrame(startGame);
       gameButton.children[0].style.display = 'initial';
       gameButton.children[1].style.display = 'none';
     }
