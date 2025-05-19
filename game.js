@@ -2,13 +2,25 @@
   let isPause = false;
   let animationId = null;
 
+  // console.log(window);
+  // window.innerHeight: 577;
+  // window.innerWidth: 794;
+
+
   const speed = 3;
 
   const car = document.querySelector('.car');
   const trees = document.querySelectorAll('.tree');
 
-  const tree1 = trees[0];
-  const coordsTree1 = getCoords(tree1);
+  // массив деревьев
+  const treesCoords = [];
+
+  for (let i = 0; i < trees.length; i++) {
+    const tree = trees[i];
+    const coordsTree = getCoords(tree);
+
+    treesCoords.push(coordsTree);
+  }
 
   animationId = requestAnimationFrame(startGame);
 
@@ -21,10 +33,21 @@
 
   //функция панимации деревьев
   function treesAnimation() {
-    const newCoordY = coordsTree1.y + speed;
-    coordsTree1.y = newCoordY;
-    tree1.style.transform = `translate(${coordsTree1.x}px, ${newCoordY}px)`;
+    for (let i = 0; i < trees.length; i++) {
+      const tree = trees[i];
+      const coords = treesCoords[i];
 
+      let newYCoord = coords.y + speed;
+
+      // проверка координат дерева на зацикливание анимации
+      if (newYCoord > window.innerHeight) {
+        newYCoord = -tree.height;
+      }
+      
+      // перезаписываем новые координаты
+      treesCoords[i].y = newYCoord;
+      tree.style.transform = `translate(${coords.x}px, ${newYCoord}px)`;
+    }
   };
 
   // функция получения координат деревьев
