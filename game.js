@@ -5,10 +5,26 @@
   // console.log(window);
   // window.innerHeight: 577;
   // window.innerWidth: 794;
-
+  
+  // задаем скорость
   const speed = 3;
-
+  // находим машину
   const car = document.querySelector('.car');
+  // находим ширину(половину) и высоту машины
+  const carWidth = car.clientWidth / 2;
+  const carHeight = car.clientHeight;
+
+  // находим монетку
+  const coin = document.querySelector('.coin');
+  const coinCoord = getCoords(coin);
+
+
+  // находим дорогу и ее высоту и ширину(половину)
+  const road = document.querySelector('.road');
+  const roadHeight = road.clientHeight;
+  const roadwidth = road.clientWidth / 2;
+
+  // находим все деревья 
   const trees = document.querySelectorAll('.tree');
 
   // получение коодинат машины
@@ -33,44 +49,63 @@
   // логика для анимации машины
   // запуск анимации
   document.addEventListener('keydown', (event) => {
+    // если игра на паузе, код дальше не выполняется. управление машиной становится невозможным
+    if (isPause) {
+      return
+    };
+
     const code = event.code;
 
-    if (code === 'ArrowUp' && carMoveInfo.top === null) {
+    // проверяется условие на нажатие кнопок "стрелки:верх, вниз, влево, вправо" и кнопок "WSAD"
+    if ((code === 'ArrowUp' || code === 'KeyW') && carMoveInfo.top === null) {
+      // условие: если мы двигаемся вверх, вниз не работает
+      if (carMoveInfo.bottom) {
+        return;
+      }
       // запуск аниамацие по кнопке вверх
       carMoveInfo.top = requestAnimationFrame(carMoveToTop);
     }
-    else if (code === 'ArrowDown'&& carMoveInfo.bottom === null) {
+    else if ((code === 'ArrowDown' || code === 'KeyS') && carMoveInfo.bottom === null) {
+      if (carMoveInfo.top) {
+        return;
+      }
       carMoveInfo.bottom = requestAnimationFrame(carMoveToBottom);
-
     }
-    else if (code === 'ArrowLeft' && carMoveInfo.left === null) {
+    else if ((code === 'ArrowLeft' || code === 'KeyA') && carMoveInfo.left === null) {
+      if (carMoveInfo.right) {
+        return;
+      }
       carMoveInfo.left = requestAnimationFrame(carMoveToLeft);
 
     }
-    else if (code === 'ArrowRight' && carMoveInfo.right === null) {
+    else if ((code === 'ArrowRight' || code === 'KeyD') && carMoveInfo.right === null) {
+      if (carMoveInfo.left) {
+        return;
+      }
       carMoveInfo.right = requestAnimationFrame(carMoveToRight);
 
     }
   });
+
   // отмена анимации
   document.addEventListener('keyup', (event) => {
     const code = event.code;
-
-    if (code === 'ArrowUp') {
+    // проверяется условие на ОТЖАТИЕ кнопок "стрелки:верх, вниз, влево, вправо" и кнопок "WSAD"
+    if (code === 'ArrowUp' || code === 'KeyW') {
       // как только отпускается клавиша, завершается анимация с высчитыванием координат
       cancelAnimationFrame(carMoveInfo.top);
       // обнуляем хранилище
       carMoveInfo.top = null;
     }
-    else if (code === 'ArrowDown') {
+    else if (code === 'ArrowDown' || code === 'KeyS') {
       cancelAnimationFrame(carMoveInfo.bottom);
       carMoveInfo.bottom = null;
     }
-    else if (code === 'ArrowLeft') {
+    else if (code === 'ArrowLeft' || code === 'KeyA') {
       cancelAnimationFrame(carMoveInfo.left);
       carMoveInfo.left = null;
     }
-    else if (code === 'ArrowRight') {
+    else if (code === 'ArrowRight' || code === 'KeyD') {
       cancelAnimationFrame(carMoveInfo.right);
       carMoveInfo.right = null;
     }
@@ -80,6 +115,10 @@
   function carMoveToTop() {
     // высчитываем новую коодинату по оси Y
     const newY = carCoords.y - 5;
+    // условием ограничиваем движение машины за пределы экрана
+    if (newY < 0) {
+      return;
+    }
     // сохранили координату в хранилище
     carCoords.y = newY;
     // имея нужные координаты передвинули машину
@@ -89,23 +128,34 @@
   }
   function carMoveToBottom() {
     const newY = carCoords.y + 5;
+    if ((newY + carHeight) > roadHeight) {
+      return;
+    }
     carCoords.y = newY;
     carMove(carCoords.x, newY);
     carMoveInfo.bottom = requestAnimationFrame(carMoveToBottom);
   }
   function carMoveToLeft() {
     const newX = carCoords.x - 5;
+    if (newX < -roadwidth + carWidth) {
+      return;
+    }
+
     carCoords.x = newX;
     carMove(newX, carCoords.y);
     carMoveInfo.left = requestAnimationFrame(carMoveToLeft);
   }
   function carMoveToRight() {
     const newX = carCoords.x + 5;
+    if (newX > roadwidth - carWidth) {
+      return;
+    }
     carCoords.x = newX;
     carMove(newX, carCoords.y);
     carMoveInfo.right = requestAnimationFrame(carMoveToRight);
   }
 
+  // задаем координаты машине
   function carMove(x, y) {
     car.style.transform = `translate(${x}px, ${y}px)`
   }
@@ -115,11 +165,11 @@
   // запуск игры
   function startGame() {
     treesAnimation();
-
+    coinAnimation();
     animationId = requestAnimationFrame(startGame);
   };
 
-  //функция панимации деревьев
+  //функция  анимации деревьев
   function treesAnimation() {
     for (let i = 0; i < trees.length; i++) {
       const tree = trees[i];
@@ -138,6 +188,34 @@
     }
   };
 
+  // функция расчета координат монетки
+  function coinAnimation() {
+    let newYCoord = coinCoord.y + speed;
+    let newXCoord = coinCoord.x;
+
+    if (newYCoord > window.innerHeight) {
+      newYCoord = -150;
+    }
+
+    const direction = parseInt(Math.random() * 2);
+    const randomXCoord = parseInt(Math.random() * (roadwidth + 1));
+
+    // if (direction === 0) { // двигаем влево
+    //   newXCoord = -randomXCoord;
+    // } else if (direction === 1) { // двигаем вправо
+    //   newXCoord = randomXCoord;
+    // }
+
+    // то же самое и if/else
+    newXCoord = direction === 0 ? -randomXCoord : randomXCoord;
+
+    // хранилище координат
+    coinCoord.y = newYCoord;
+    coinCoord.x = newXCoord;
+
+    coin.style.transform = `translate(${newXCoord}px, ${newYCoord}px)`;
+  }
+
   // функция получения координат деревьев
   function getCoords(element) {
     const matrix = window.getComputedStyle(element).transform;
@@ -151,13 +229,16 @@
     return { x: numericX, y: numericY };
   }
 
-
 // функция запуска и остановки игры 
   const gameButton = document.querySelector('.game-button');
   gameButton.addEventListener('click', () => {
     isPause = !isPause;
     if (isPause) {
       cancelAnimationFrame(animationId);
+      cancelAnimationFrame(carMoveInfo.top);
+      cancelAnimationFrame(carMoveInfo.bottom);
+      cancelAnimationFrame(carMoveInfo.left);
+      cancelAnimationFrame(carMoveInfo.right);
       gameButton.children[0].style.display = 'none';
       gameButton.children[1].style.display = 'initial';
     } 
@@ -167,7 +248,5 @@
       gameButton.children[1].style.display = 'none';
     }
   });
-
-
-
+  
 })();
