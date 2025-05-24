@@ -20,6 +20,7 @@ body {
 
 .tree {
   position: absolute;
+  z-index: 10;
 }
 
 .tree1 {
@@ -56,6 +57,7 @@ body {
   padding: 0;
   cursor: pointer;
   transition: transform .3s ease;
+  z-index: 20;
 }
 
 .game-button .play {

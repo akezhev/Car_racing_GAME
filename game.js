@@ -17,7 +17,7 @@
   // находим монетку
   const coin = document.querySelector('.coin');
   const coinCoord = getCoords(coin);
-
+  const coinWidth = coin.clientWidth / 2;
 
   // находим дорогу и ее высоту и ширину(половину)
   const road = document.querySelector('.road');
@@ -76,14 +76,12 @@
         return;
       }
       carMoveInfo.left = requestAnimationFrame(carMoveToLeft);
-
     }
     else if ((code === 'ArrowRight' || code === 'KeyD') && carMoveInfo.right === null) {
       if (carMoveInfo.left) {
         return;
       }
       carMoveInfo.right = requestAnimationFrame(carMoveToRight);
-
     }
   });
 
@@ -140,7 +138,6 @@
     if (newX < -roadwidth + carWidth) {
       return;
     }
-
     carCoords.x = newX;
     carMove(newX, carCoords.y);
     carMoveInfo.left = requestAnimationFrame(carMoveToLeft);
@@ -194,25 +191,24 @@
     let newXCoord = coinCoord.x;
 
     if (newYCoord > window.innerHeight) {
+      // появление монетки за пределами экрана на 150 пикс
       newYCoord = -150;
+        const direction = parseInt(Math.random() * 2);
+        const maxXCoord = (roadwidth + 1 - coinWidth);
+        const randomXCoord = parseInt(Math.random() * maxXCoord);
+
+        // if (direction === 0) { // двигаем влево
+        //   newXCoord = -randomXCoord;
+        // } else if (direction === 1) { // двигаем вправо
+        //   newXCoord = randomXCoord;
+        // }
+
+        // то же самое и if/else
+        newXCoord = direction === 0 ? -randomXCoord : randomXCoord;
     }
-
-    const direction = parseInt(Math.random() * 2);
-    const randomXCoord = parseInt(Math.random() * (roadwidth + 1));
-
-    // if (direction === 0) { // двигаем влево
-    //   newXCoord = -randomXCoord;
-    // } else if (direction === 1) { // двигаем вправо
-    //   newXCoord = randomXCoord;
-    // }
-
-    // то же самое и if/else
-    newXCoord = direction === 0 ? -randomXCoord : randomXCoord;
-
     // хранилище координат
     coinCoord.y = newYCoord;
     coinCoord.x = newXCoord;
-
     coin.style.transform = `translate(${newXCoord}px, ${newYCoord}px)`;
   }
 
