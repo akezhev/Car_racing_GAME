@@ -19,6 +19,17 @@
   const coinCoord = getCoords(coin);
   const coinWidth = coin.clientWidth / 2;
 
+  // получаем стрелку
+  const arrow = document.querySelector('.arrow');
+  const arrowCoord = getCoords(arrow);
+  const arrowWidth = arrow.clientWidth / 2;
+
+  // получем табличку
+  const danger = document.querySelector('.danger');
+  const dangerCoord = getCoords(danger);
+  const dangerWidth = danger.clientWidth / 2;
+
+
   // находим дорогу и ее высоту и ширину(половину)
   const road = document.querySelector('.road');
   const roadHeight = road.clientHeight;
@@ -160,9 +171,12 @@
   animationId = requestAnimationFrame(startGame);
 
   // запуск игры
+  // анимация всех деталей
   function startGame() {
     treesAnimation();
-    coinAnimation();
+    elementAnimation(coin, coinCoord, coinWidth, -100);
+    elementAnimation(danger, dangerCoord, dangerWidth, -300);
+    elementAnimation(arrow, arrowCoord, arrowWidth, -600);
     animationId = requestAnimationFrame(startGame);
   };
 
@@ -185,16 +199,16 @@
     }
   };
 
-  // функция расчета координат монетки
-  function coinAnimation() {
-    let newYCoord = coinCoord.y + speed;
-    let newXCoord = coinCoord.x;
+  // функция расчета координат монетки, таблички и стрелки
+  function elementAnimation(elem, elemCoord, elemWidth, elemInitialYCoord) {
+    let newYCoord = elemCoord.y + speed;
+    let newXCoord = elemCoord.x;
 
     if (newYCoord > window.innerHeight) {
       // появление монетки за пределами экрана на 150 пикс
-      newYCoord = -150;
+      newYCoord = elemInitialYCoord;
         const direction = parseInt(Math.random() * 2);
-        const maxXCoord = (roadwidth + 1 - coinWidth);
+        const maxXCoord = (roadwidth + 1 - elemWidth);
         const randomXCoord = parseInt(Math.random() * maxXCoord);
 
         // if (direction === 0) { // двигаем влево
@@ -207,9 +221,9 @@
         newXCoord = direction === 0 ? -randomXCoord : randomXCoord;
     }
     // хранилище координат
-    coinCoord.y = newYCoord;
-    coinCoord.x = newXCoord;
-    coin.style.transform = `translate(${newXCoord}px, ${newYCoord}px)`;
+    elemCoord.x = newXCoord;
+    elemCoord.y = newYCoord;
+    elem.style.transform = `translate(${newXCoord}px, ${newYCoord}px)`;
   }
 
   // функция получения координат деревьев

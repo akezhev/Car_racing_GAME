@@ -76,16 +76,18 @@ body {
 .danger {
   position: absolute;
   width: 80px;
+  transform: translate(-100px, -300px);
 }
 
 .coin {
   position: absolute;
   width: 50px;
-  transform: translate(50px, -50px);
+  transform: translate(50px, -100px);
 
 }
 
 .arrow {
   position: absolute;
   width: 50px;
+  transform: translate(10px, -600px);
 }
