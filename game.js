@@ -13,11 +13,22 @@
   // находим ширину(половину) и высоту машины
   const carWidth = car.clientWidth / 2;
   const carHeight = car.clientHeight;
+  // получение коодинат машины
+  const carCoords = getCoords(car);
+  const carMoveInfo = {
+    top: null,
+    bottom: null,
+    left: null,
+    right: null,
+  }
+
 
   // находим монетку
   const coin = document.querySelector('.coin');
   const coinCoord = getCoords(coin);
   const coinWidth = coin.clientWidth / 2;
+  const coinHeight = coin.clientHeight;
+
 
   // получаем стрелку
   const arrow = document.querySelector('.arrow');
@@ -38,14 +49,6 @@
   // находим все деревья 
   const trees = document.querySelectorAll('.tree');
 
-  // получение коодинат машины
-  const carCoords = getCoords(car);
-  const carMoveInfo = {
-    top: null,
-    bottom: null,
-    left: null,
-    right: null,
-  }
 
   // массив деревьев
   const treesCoords = [];
@@ -165,6 +168,7 @@
 
   // задаем координаты машине
   function carMove(x, y) {
+    hasCollision();
     car.style.transform = `translate(${x}px, ${y}px)`
   }
 
@@ -237,6 +241,31 @@
     const numericX = parseFloat(x);
 
     return { x: numericX, y: numericY };
+  }
+
+  // функция коллизии
+  function hasCollision() {
+    const carYTop = carCoords.y;
+    const carYBottom = carCoords.y + carHeight;
+
+    const carXLeft = carCoords.x - carWidth;
+    const carXRight = carCoords.x + carWidth;
+
+    const coinYTop = coinCoord.y;
+    const coinYBottom = coinCoord.y + coinHeight;
+
+    const coinXLeft = coinCoord.x - coinWidth;
+    const coinXRight = coinCoord.x + coinWidth;
+
+    // ось y
+    if (carYTop > coinYBottom || carYBottom < coinYTop) {
+      return false;
+    }
+    // ось X
+    if (carXLeft > coinXRight || carXRight < coinXLeft) {
+      return false;
+    }
+    return true;
   }
 
 // функция запуска и остановки игры 
