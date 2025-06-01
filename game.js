@@ -39,7 +39,11 @@
   const roadHeight = road.clientHeight;
   const roadwidth = road.clientWidth / 2;
 
+  const gameButton = document.querySelector('.game-button');
   const gameScore = document.querySelector('.game-score');
+  const backdrop = document.querySelector('.backdrop');
+  const restartButton = document.querySelector('.restart-button');
+
 
   // находим все деревья 
   const trees = document.querySelectorAll('.tree');
@@ -142,6 +146,7 @@
     // зациклили функцию
     carInfo.move.top = requestAnimationFrame(carMoveToTop);
   }
+
   function carMoveToBottom() {
     const newY = carInfo.coords.y + 5;
     if ((newY + carInfo.height) > roadHeight) {
@@ -151,6 +156,7 @@
     carMove(carInfo.coords.x, newY);
     carInfo.move.bottom = requestAnimationFrame(carMoveToBottom);
   }
+
   function carMoveToLeft() {
     const newX = carInfo.coords.x - 5;
     if (newX < -roadwidth + carInfo.width) {
@@ -160,6 +166,7 @@
     carMove(newX, carInfo.coords.y);
     carInfo.move.left = requestAnimationFrame(carMoveToLeft);
   }
+  
   function carMoveToRight() {
     const newX = carInfo.coords.x + 5;
     if (newX > roadwidth - carInfo.width) {
@@ -180,6 +187,12 @@
   // запуск игры
   // анимация всех деталей
   function startGame() {
+    elementAnimation(danger, dangerInfo, -300);
+
+    if (hasCollision(carInfo, dangerInfo)) {
+      return finishGame();
+    }
+
     treesAnimation();
     elementAnimation(coin, coinInfo, -100);
 
@@ -194,8 +207,9 @@
       }
     };
 
-    // elementAnimation(danger, dangerInfo.coords, dangerInfo.width, -300);
-    // elementAnimation(arrow, arrowInfo.coords, arrowInfo.width, -600);
+
+    
+    // elementAnimation(arrow, arrowInfo, -600);
 
     animationId = requestAnimationFrame(startGame);
   };
@@ -231,13 +245,15 @@
         const maxXCoord = (roadwidth + 1 - elemInfo.width);
         const randomXCoord = parseInt(Math.random() * maxXCoord);
 
+        elem.style.display = "initial";
+        elemInfo.visible = true;
+
         // if (direction === 0) { // двигаем влево
         //   newXCoord = -randomXCoord;
         // } else if (direction === 1) { // двигаем вправо
         //   newXCoord = randomXCoord;
         // }
-        elem.style.display = "initial";
-        elemInfo.visible = true;
+
         // то же самое и if/else
         newXCoord = direction === 0 ? -randomXCoord : randomXCoord;
     }
@@ -285,16 +301,31 @@
     return true;
   }
 
+  // 
+  function cancelAnimations() {
+    cancelAnimationFrame(animationId);
+    cancelAnimationFrame(carInfo.move.top);
+    cancelAnimationFrame(carInfo.move.bottom);
+    cancelAnimationFrame(carInfo.move.left);
+    cancelAnimationFrame(carInfo.move.right);  
+  }
+
+  // 
+  function finishGame() {
+    cancelAnimations();
+
+    gameScore.style.display = 'none';
+    gameButton.style.display = 'none';
+    backdrop.style.display = 'flex';
+    const scoreText = backdrop.querySelector('.finish-text-score');
+    scoreText.innerText = score;
+  }
+
 // функция запуска и остановки игры 
-  const gameButton = document.querySelector('.game-button');
   gameButton.addEventListener('click', () => {
     isPause = !isPause;
     if (isPause) {
-      cancelAnimationFrame(animationId);
-      cancelAnimationFrame(carInfo.move.top);
-      cancelAnimationFrame(carInfo.move.bottom);
-      cancelAnimationFrame(carInfo.move.left);
-      cancelAnimationFrame(carInfo.move.right);
+      cancelAnimations();
       gameButton.children[0].style.display = 'none';
       gameButton.children[1].style.display = 'initial';
     } 
@@ -304,5 +335,9 @@
       gameButton.children[1].style.display = 'none';
     }
   });
+
+  restartButton.addEventListener('click', () => {
+    window.location.reload();
+  })
   
 })();
