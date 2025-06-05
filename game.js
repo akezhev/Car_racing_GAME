@@ -213,14 +213,16 @@
       danger.style.opacity = 0.2;
       dangerInfo.visible = false;
 
-      // speed += 10;
+      speed += 5;
 
       setTimeout(() => {
         danger.style.opacity = 1;
-        dangerInfo.visible = true;
+        speed -= 5
 
-        // speed -= 10;
-      }, 5000);
+        setTimeout(() => {
+          dangerInfo.visible = true;
+        }, 500);
+      }, 1000);
     };
     
 
