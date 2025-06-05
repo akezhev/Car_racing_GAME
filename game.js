@@ -44,14 +44,12 @@
   const backdrop = document.querySelector('.backdrop');
   const restartButton = document.querySelector('.restart-button');
 
-
   // находим все деревья 
   const trees = document.querySelectorAll('.tree');
 
-
   // массив деревьев
   const treesCoords = [];
-
+  
   for (let i = 0; i < trees.length; i++) {
     const tree = trees[i];
     const coordsTree = getCoords(tree);
@@ -206,8 +204,6 @@
         speed += 2;
       }
     };
-
-
     
     // elementAnimation(arrow, arrowInfo, -600);
 
