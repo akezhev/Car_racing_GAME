@@ -49,7 +49,7 @@
 
   // массив деревьев
   const treesCoords = [];
-  
+
   for (let i = 0; i < trees.length; i++) {
     const tree = trees[i];
     const coordsTree = getCoords(tree);
@@ -187,7 +187,7 @@
   function startGame() {
     elementAnimation(danger, dangerInfo, -300);
 
-    if (hasCollision(carInfo, dangerInfo)) {
+    if (dangerInfo.visible && hasCollision(carInfo, dangerInfo)) {
       return finishGame();
     }
 
@@ -205,7 +205,24 @@
       }
     };
     
-    // elementAnimation(arrow, arrowInfo, -600);
+    elementAnimation(arrow, arrowInfo, -600);
+
+    if (arrowInfo.visible && hasCollision(carInfo, arrowInfo)) {
+      arrow.style.display = 'none';
+      arrowInfo.visible = false;
+      danger.style.opacity = 0.2;
+      dangerInfo.visible = false;
+
+      // speed += 10;
+
+      setTimeout(() => {
+        danger.style.opacity = 1;
+        dangerInfo.visible = true;
+
+        // speed -= 10;
+      }, 5000);
+    };
+    
 
     animationId = requestAnimationFrame(startGame);
   };
