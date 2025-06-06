@@ -126,6 +126,7 @@
       height: element.clientHeight,
       width: element.clientWidth / 2,
       visible: true,
+      ignoreAppearance: false,
     }
   };
 
@@ -185,7 +186,7 @@
   // запуск игры
   // анимация всех деталей
   function startGame() {
-    elementAnimation(danger, dangerInfo, -300);
+    elementAnimation(danger, dangerInfo, -250);
 
     if (dangerInfo.visible && hasCollision(carInfo, dangerInfo)) {
       return finishGame();
@@ -204,7 +205,7 @@
         speed += 2;
       }
     };
-    
+
     elementAnimation(arrow, arrowInfo, -600);
 
     if (arrowInfo.visible && hasCollision(carInfo, arrowInfo)) {
@@ -213,19 +214,23 @@
       danger.style.opacity = 0.2;
       dangerInfo.visible = false;
 
-      speed += 5;
+      arrowInfo.ignoreAppearance = true;
+      dangerInfo.ignoreAppearance = true;
+
+
+      speed += 10;
 
       setTimeout(() => {
         danger.style.opacity = 1;
-        speed -= 5
+        speed -= 10;
 
         setTimeout(() => {
           dangerInfo.visible = true;
-        }, 500);
-      }, 1000);
+          arrowInfo.ignoreAppearance = false;
+          dangerInfo.ignoreAppearance = false;
+        }, 1000);
+      }, 2000);
     };
-    
-
     animationId = requestAnimationFrame(startGame);
   };
 
@@ -256,21 +261,23 @@
     if (newYCoord > window.innerHeight) {
       // появление монетки за пределами экрана на 150 пикс
       newYCoord = elemInitialYCoord;
-        const direction = parseInt(Math.random() * 2);
-        const maxXCoord = (roadwidth + 1 - elemInfo.width);
-        const randomXCoord = parseInt(Math.random() * maxXCoord);
+      const direction = parseInt(Math.random() * 2);
+      const maxXCoord = (roadwidth + 1 - elemInfo.width);
+      const randomXCoord = parseInt(Math.random() * maxXCoord);
 
+      if (!elemInfo.ignoreAppearance) {
         elem.style.display = "initial";
         elemInfo.visible = true;
+      }
 
-        // if (direction === 0) { // двигаем влево
-        //   newXCoord = -randomXCoord;
-        // } else if (direction === 1) { // двигаем вправо
-        //   newXCoord = randomXCoord;
-        // }
+      // if (direction === 0) { // двигаем влево
+      //   newXCoord = -randomXCoord;
+      // } else if (direction === 1) { // двигаем вправо
+      //   newXCoord = randomXCoord;
+      // }
 
-        // то же самое и if/else
-        newXCoord = direction === 0 ? -randomXCoord : randomXCoord;
+      // то же самое и if/else
+      newXCoord = direction === 0 ? -randomXCoord : randomXCoord;
     }
     // хранилище координат
     elemInfo.coords.x = newXCoord;
